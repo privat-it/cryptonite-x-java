@@ -1,0 +1,31 @@
+apply plugin: 'java'
+
+repositories {
+    jcenter()
+}
+
+task copyLib(dependsOn: ':lib:minify') {
+    doLast {
+        copy {
+            from    "../lib/build/libs"
+            into    "build/tmp/libs"
+            include "*min*"
+        }
+    }
+}
+
+compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
+
+compileJava.dependsOn copyLib
+
+dependencies {
+    testCompile 'org.testng:testng:6.9.10'
+    testCompile fileTree(dir: 'build/tmp/libs', include: '*.jar')
+}
+
+test {
+    useTestNG()
+}
+
+defaultTasks 'build'
