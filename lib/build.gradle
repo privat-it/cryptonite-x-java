@@ -1,0 +1,128 @@
+import java.text.SimpleDateFormat
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'net.sf.proguard:proguard-gradle:5.2.1'
+    }
+}
+
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '1.2.3'
+}
+
+repositories {
+    jcenter()
+}
+
+task setVersionProperty {
+    version = "1.0.0";
+}
+
+compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
+
+dependencies {
+    compile 'org.apache.httpcomponents:httpasyncclient:4.1.2'
+    compile 'commons-io:commons-io:2.5'
+
+    compile 'com.github.jnr:jnr-ffi:2.+'
+}
+
+sourceSets {
+    main {
+        resources {
+            srcDir 'build/tmp/libs'
+            exclude 'cryptonite**'
+        }
+    }
+}
+
+task copyLib() {
+    doLast {
+        copy {
+            from "$projectDir/libs"
+            into "$buildDir/tmp/libs/libs"
+
+            include "**/*.dll"
+            include "**/*.so"
+            include "**/*.dylib"
+
+            exclude "**/*.lib.dll"
+        }
+    }
+}
+
+compileJava.dependsOn copyLib
+
+jar {
+    baseName = 'cryptonite-x'
+
+    from ({
+        configurations.compile.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }) {
+        exclude 'META-INF/*.SF'
+        exclude 'META-INF/*.DSA'
+        exclude 'META-INF/*.RSA'
+    }
+}
+
+shadowJar {
+    baseName = 'cryptonite-x'
+    classifier = ''
+
+    mergeServiceFiles()
+
+    manifest {
+        attributes 'Implementation-Title': 'CryptoniteX',
+                'Implementation-Version': version,
+                'Built-Date': new Date(),
+                'Built-JDK': System.getProperty('java.version'),
+                'Main-Class': "ua.privatbank.cryptonite"
+    }
+}
+
+task javadocs(type: Javadoc) {
+    source = "src/main/java/com/privatbank/cryptonite/CryptoniteX.java"
+    options.addStringOption("encoding", "UTF-8")
+    options.addStringOption("docencoding", "UTF-8")
+    options.addStringOption("charset", "UTF-8")
+    destinationDir = reporting.file("rest-api-docs")
+    source = sourceSets.main.allJava
+    classpath = configurations.compile
+}
+
+task minify(type: proguard.gradle.ProGuardTask) {
+    it.dependsOn shadowJar
+    injars tasks['shadowJar'].archivePath
+    outjars new File(tasks['shadowJar'].destinationDir, "cryptonite-x-min-"+version+".jar")
+    libraryjars fileTree(dir: "${System.getProperty('java.home')}/lib/", include: "*.jar")
+
+    keep "public class ua.privatbank.cryptonite.** { public *; }"
+    keep "public enum ua.privatbank.cryptonite.helper.* { *; }"
+
+    keep "public class org.apache.commons.** { *; }"
+
+    keepattributes "*Annotation*"
+    keepattributes "Signature"
+    keepattributes "Exceptions"
+
+    keep "class jnr.** { *; }"
+    keep "class com.kenai.** { *; }"
+
+    target "1.7"
+
+    dontwarn
+}
+
+manifest {
+    attributes 'Implementation-Title': 'CryptoniteX', 'Implementation-Version 1.0.0'
+}
+
+defaultTasks 'minify'
