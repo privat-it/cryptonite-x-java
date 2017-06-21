@@ -1026,7 +1026,7 @@ public class CryptoniteX {
         final byte[] encoded;
 
         try {
-            sa = keyStore.getSignAdapter();
+            sa = (keyStore != null) ? keyStore.getSignAdapter() : null;
             encoded = CryptonitePkiJnr.engineOCSPRequestGenerate(sa, rootCert, ocspCert, includeNonce, serialNumbers);
         } finally {
             CryptonitePkiJnr.signAdapterFree(sa);
