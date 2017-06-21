@@ -296,18 +296,23 @@ public class CryptoniteXJnr extends CryptoniteAbstract {
         return (cert.getValue() != null) ? new CertificatePointer(cert.getValue()) : null;
     }
 
-    public static ByteArrayPointer verifyInfoGetHash(final VerifyInfoPointer vi) throws CryptoniteException {
+    public static byte[] verifyInfoGetHash(final VerifyInfoPointer vi) throws CryptoniteException {
         PointerByReference hash = new PointerByReference();
         execute(instance.verify_info_get_hash(vi, hash));
-
-        return new ByteArrayPointer(hash);
+        return CryptoniteJnr.byteArrayToByte(hash);
     }
 
-    public static ByteArrayPointer verifyInfoGetSignerId(final VerifyInfoPointer vi) throws CryptoniteException {
+    public static byte[] verifyInfoGetSignerId(final VerifyInfoPointer vi) throws CryptoniteException {
         PointerByReference signer = new PointerByReference();
         execute(instance.verify_info_get_signer_id(vi, signer));
 
-        return new ByteArrayPointer(signer);
+        return CryptoniteJnr.byteArrayToByte(signer);
+    }
+
+    public static byte[] verifyInfoGetTspSid(final VerifyInfoPointer vi) throws CryptoniteException {
+        PointerByReference sid = new PointerByReference();
+        execute(instance.verify_info_get_tsp_sid(vi, sid));
+        return CryptoniteJnr.byteArrayToByte(sid);
     }
 
     public static SignStatus verifyInfoGetSignStatus(final VerifyInfoPointer vi) throws CryptoniteException {

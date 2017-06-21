@@ -33,6 +33,8 @@ public class CertificateInfo {
 
     private final HashMap<String, String> subjectAltName;
 
+    private final byte[] encoded; 
+
     public CertificateInfo(final CertificatePointer cert) throws CryptoniteException {
         //TODO: проверить на возможные ошибки при получении различных полей, когда они отсутствуют
         this.serialNumber = CryptonitePkiJnr.certificateGetSerialNumber(cert);
@@ -47,6 +49,8 @@ public class CertificateInfo {
         this.notValidBefore = CryptoniteXJnr.certificateGetNotBefore(cert);
         this.notValidAfter = CryptoniteXJnr.certificateGetNotAfter(cert);
         this.publicKey = CryptonitePkiJnr.certificateGetSpki(cert);
+
+        this.encoded = CryptonitePkiJnr.certificateEncode(cert);
     }
 
     public HashMap<SupportedCommonName, String> getIssuer() {
@@ -89,6 +93,10 @@ public class CertificateInfo {
         return subjectAltName;
     }
 
+    public byte[] getEncoded() {
+        return encoded;
+    }
+
     @Override
     public String toString() {
         return "CertificateInfo [serialNumber=" + Utils.byteToHex(serialNumber) + ", issuer=" + issuer + ", subject="
@@ -96,6 +104,5 @@ public class CertificateInfo {
                 + Utils.byteToHex(publicKey) + ", qcStatement=" + qcStatement + ", inn=" + inn + ", egrpou=" + egrpou
                 + ", subjectAltName=" + subjectAltName + "]";
     }
-
 
 }
