@@ -467,12 +467,12 @@ public class CryptoniteXJnr extends CryptoniteAbstract {
         return flag[0];
     }
 
-    public static void storageGenerateKey(final StoragePointer storage, final ByteArrayPointer aid) throws CryptoniteException {
-        execute(instance.storage_generate_key(storage, aid));
+    public static void storageGenerateKey(final StoragePointer storage, final ByteArrayPointer aid, String alias, String password) throws CryptoniteException {
+        execute(instance.storage_generate_key(storage, aid, alias, password));
     }
 
-    public static void storageGenerateDhKey(final StoragePointer storage, final ByteArrayPointer aid) throws CryptoniteException {
-        execute(instance.storage_generate_key_dh(storage, aid));
+    public static void storageGenerateDhKey(final StoragePointer storage, final ByteArrayPointer aid, String alias, String password) throws CryptoniteException {
+        execute(instance.storage_generate_key_dh(storage, aid, alias, password));
     }
 
     public static void storageRenameKey(final StoragePointer storage, final String alias) throws CryptoniteException {
@@ -483,24 +483,12 @@ public class CryptoniteXJnr extends CryptoniteAbstract {
         execute(instance.storage_change_key_pwd(storage, old_pwd, new_pwd));
     }
 
-    public static boolean storageIsKeyGenerated(final StoragePointer storage) throws CryptoniteException {
-        final boolean[] flag = new boolean[1];
-
-        execute(instance.storage_is_key_generated(storage, flag));
-
-        return flag[0];
-    }
-
     public static boolean storageIsAliasAvailable(final StoragePointer storage, final String alias) throws CryptoniteException {
         final boolean[] flag = new boolean[1];
 
         execute(instance.storage_is_alias_available(storage, alias, flag));
 
         return flag[0];
-    }
-
-    public static void storageStoreKey(final StoragePointer storage, final String alias, final String password) throws CryptoniteException {
-        execute(instance.storage_store_key(storage, alias, password));
     }
 
     public static ByteArrayPointer storageGetCertificate(final StoragePointer storage, int key_usage) throws CryptoniteException {

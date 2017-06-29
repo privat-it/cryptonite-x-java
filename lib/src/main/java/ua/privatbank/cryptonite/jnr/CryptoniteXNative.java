@@ -351,7 +351,7 @@ public interface CryptoniteXNative {
      *
      * @return код помилки
      */
-    int storage_generate_key(StoragePointer storage, final ByteArrayPointer aid);
+    int storage_generate_key(StoragePointer storage, final ByteArrayPointer aid, String alias, String password);
 
     /**
      * Генерує нову пару DH асиметричних ключів з певними параметрами.
@@ -361,7 +361,7 @@ public interface CryptoniteXNative {
      *
      * @return код помилки
      */
-    int storage_generate_key_dh(StoragePointer storage, final ByteArrayPointer aid);
+    int storage_generate_key_dh(StoragePointer storage, final ByteArrayPointer aid, String alias, String password);
 
     /**
      * Перейменовує обраний ключ.
@@ -384,15 +384,6 @@ public interface CryptoniteXNative {
      */
     int storage_change_key_pwd(StoragePointer storage, final String old_pwd, final String new_pwd);
 
-    /**
-     * Чи згенерований новий ключ?
-     *
-     * @param storage сховище
-     * @param is_generated true - згенерований, false - ще ні
-     *
-     * @return код помилки
-     */
-    int storage_is_key_generated(final StoragePointer storage, boolean[] is_generated);
 
     /**
      * Перевіряє, чи можливо задати такий аліас ключу.
@@ -405,16 +396,6 @@ public interface CryptoniteXNative {
      */
     int storage_is_alias_available(final StoragePointer storage, final String alias, boolean[] flag);
 
-    /**
-     * Зберігає згенерований ключ.
-     *
-     * @param storage сховище
-     * @param alias користувацьке ім'я ключа
-     * @param pwd користувацький пароль до ключа або NULL
-     *
-     * @return код помилки
-     */
-    int storage_store_key(StoragePointer storage, final String alias, final String pwd);
 //
 //    /**
 //     * Повертає байтове представлення стисненого відкритого ключа.

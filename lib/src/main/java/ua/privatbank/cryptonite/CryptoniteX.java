@@ -190,8 +190,7 @@ public class CryptoniteX {
         try {
             storage = CryptoniteXJnr.storageCreate(type, password, 0);
 
-            CryptoniteXJnr.storageGenerateKey(storage, aidPtr);
-            CryptoniteXJnr.storageStoreKey(storage, alias, password);
+            CryptoniteXJnr.storageGenerateKey(storage, aidPtr, alias, password);
 
             encoded = CryptoniteXJnr.storageEncode(storage);
         } finally {
