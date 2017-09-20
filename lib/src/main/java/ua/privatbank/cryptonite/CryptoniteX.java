@@ -1084,4 +1084,14 @@ public class CryptoniteX {
     public static byte[] generateTspResponseWaiting() {
         return new byte[] {0x30, 0x05, 0x30, 0x03, 0x02, 0x01, 0x03};
     }
+
+
+    /**
+     * Возвращает версию нативной библиотеки.
+     *
+     * @return версия
+     */
+    public String getVersion() {
+        return CryptoniteXJnr.VERSION;
+    }
 }
