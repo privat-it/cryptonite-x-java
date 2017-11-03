@@ -553,76 +553,45 @@ public class CryptoniteXJnr extends CryptoniteAbstract {
         return encoded;
     }
 
-    public static String certGetIssuerInfo(final CertificatePointer cert, final OidId oid) throws CryptoniteException {
-        final PointerByReference info = new PointerByReference();
-        final int ret = instance.cert_get_issuer_info_by_oid(cert, CryptonitePkiJnr.oidsGetOidNumbersById(oid), info);
+    private static String getExtValue(int retCode, final PointerByReference pinter) throws CryptoniteException {
         final String value;
 
-        if (ret == 0) {
-            final ByteArrayPointer text = new ByteArrayPointer(info);
-            value = CryptoniteJnr.byteArrayToString(text);
-            CryptoniteJnr.freeByteArray(text);
-        } else if (ret == CryptoniteException.RET_PKIX_OBJ_NOT_FOUND) {
+        if (retCode == CryptoniteException.RET_OK) {
+            value = CryptoniteJnr.pointerToString(pinter);
+        } else if ((retCode == CryptoniteException.RET_PKIX_OBJ_NOT_FOUND) ||  (retCode == CryptoniteException.RET_PKIX_EXT_NOT_FOUND)) {
             value = "";
         } else {
-            throw new CryptoniteException(ret);
+            throw new CryptoniteException(retCode);
         }
 
         return value;
+    }
+
+    public static String certGetIssuerInfo(final CertificatePointer cert, final OidId oid) throws CryptoniteException {
+        final PointerByReference info = new PointerByReference();
+        final int ret = instance.cert_get_issuer_info_by_oid(cert, CryptonitePkiJnr.oidsGetOidNumbersById(oid), info);
+        return getExtValue(ret, info);
     }
 
     public static String certGetSubjectInfo(final CertificatePointer cert, final OidId oid) throws CryptoniteException {
         final PointerByReference info = new PointerByReference();
         final int ret = instance.cert_get_subject_info_by_oid(cert, CryptonitePkiJnr.oidsGetOidNumbersById(oid), info);
-        final String value;
 
-        if (ret == 0) {
-            final ByteArrayPointer text = new ByteArrayPointer(info);
-            value = CryptoniteJnr.byteArrayToString(text);
-            CryptoniteJnr.freeByteArray(text);
-        } else if (ret == CryptoniteException.RET_PKIX_OBJ_NOT_FOUND) {
-            value = "";
-        } else {
-            throw new CryptoniteException(ret);
-        }
-
-        return value;
+        return getExtValue(ret, info);
     }
 
     public static String certGetInn(final CertificatePointer cert) throws CryptoniteException {
         final PointerByReference info = new PointerByReference();
-        final String value;
-
         final int ret = instance.cert_get_inn(cert, info);
-        if (ret == 0) {
-            final ByteArrayPointer text = new ByteArrayPointer(info);
-            value = CryptoniteJnr.byteArrayToString(text);
-            CryptoniteJnr.freeByteArray(text);
-        } else if ((ret == CryptoniteException.RET_PKIX_OBJ_NOT_FOUND) || (ret == CryptoniteException.RET_PKIX_EXT_NOT_FOUND)) {
-            value = "";
-        } else {
-            throw new CryptoniteException(ret);
-        }
 
-        return value;
+        return getExtValue(ret, info);
     }
 
     public static String certGetEgrpou(final CertificatePointer cert) throws CryptoniteException {
         final PointerByReference info = new PointerByReference();
-        final String value;
-
         final int ret = instance.cert_get_egrpou(cert, info);
-        if (ret == 0) {
-            final ByteArrayPointer text = new ByteArrayPointer(info);
-            value = CryptoniteJnr.byteArrayToString(text);
-            CryptoniteJnr.freeByteArray(text);
-        } else if ((ret == CryptoniteException.RET_PKIX_OBJ_NOT_FOUND) || (ret == CryptoniteException.RET_PKIX_EXT_NOT_FOUND)) {
-            value = "";
-        } else {
-            throw new CryptoniteException(ret);
-        }
 
-        return value;
+        return getExtValue(ret, info);
     }
 
     public static HashMap<SupportedCommonName, String> certGetIssuerInfos(final CertificatePointer cert) throws CryptoniteException {
@@ -667,7 +636,7 @@ public class CryptoniteXJnr extends CryptoniteAbstract {
         int code;
 
         code = instance.cert_get_sub_alt_name(cert, infos);
-        if (code == CryptoniteException.RET_PKIX_EXT_NOT_FOUND) {
+        if (code == CryptoniteException.RET_PKIX_OBJ_NOT_FOUND || code == CryptoniteException.RET_PKIX_EXT_NOT_FOUND) {
             return null;
         } else {
             execute(code);
@@ -691,7 +660,7 @@ public class CryptoniteXJnr extends CryptoniteAbstract {
         final PointerByReference currency = new PointerByReference();
 
         int code = instance.cert_get_qc_limit_value(cert, currency, amount, exponent);
-        if (code == CryptoniteException.RET_PKIX_OBJ_NOT_FOUND) {
+        if (code == CryptoniteException.RET_PKIX_OBJ_NOT_FOUND || code == CryptoniteException.RET_PKIX_EXT_NOT_FOUND) {
             return null;
         } else {
             execute(code);
