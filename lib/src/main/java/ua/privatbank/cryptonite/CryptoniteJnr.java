@@ -123,6 +123,14 @@ public class CryptoniteJnr extends CryptoniteAbstract {
         return ba;
     }
 
+    public static String pointerToString(final PointerByReference info) {
+        final ByteArrayPointer text = new ByteArrayPointer(info);
+        final String value = CryptoniteJnr.byteArrayToString(text);
+        CryptoniteJnr.freeByteArray(text);
+
+        return value;
+    }
+
     public static PrngCtxPointer getDstuPrng(final byte[] seed) {
         return instance.prng_alloc(PrngMode.PRNG_MODE_DSTU, byteToByteArray(seed));
     }
