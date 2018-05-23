@@ -1076,6 +1076,19 @@ public class CryptoniteX {
         return tsp;
     }
 
+    public static boolean certVerify(final byte[] cert, final byte[] rootCert) throws CryptoniteException {
+        return CryptonitePkiJnr.certificateVerify(cert, rootCert);
+    }
+
+
+    public static boolean certificateIsOcspExtKeyUsage(final byte[] cert) throws CryptoniteException {
+        return CryptonitePkiJnr.certificateIsOcspExtKeyUsage(cert);
+    }
+
+    public static boolean ocspResponseVerify(final byte[] ocspResp, final byte[] cert) throws CryptoniteException {
+        return CryptonitePkiJnr.ocspResponseVerify(ocspResp, cert);
+    }
+
     /**
      * Генерирует TSP ответ.
      *

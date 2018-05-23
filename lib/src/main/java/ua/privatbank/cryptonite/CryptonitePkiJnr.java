@@ -112,6 +112,22 @@ public class CryptonitePkiJnr extends CryptoniteAbstract {
         return sn;
     }
 
+    public static boolean certificateVerify(final byte[] cert, final byte[] rootCert) throws CryptoniteException {
+        CertificatePointer certPtr = certificateDecode(cert);
+        VerifyAdapterPointer vaPtr = getVerifyAdapterByCert(rootCert);
+
+        try {
+            execute(instance.cert_verify(certPtr, vaPtr));
+
+            return true;
+        } catch (Exception e) {
+            return false;
+        } finally {
+            certificateFree(certPtr);
+            verifyAdapterFree(vaPtr);
+        }
+    }
+
     public static void certificateFree(final CertificatePointer cert) {
         instance.cert_free(cert);
     }
@@ -160,6 +176,20 @@ public class CryptonitePkiJnr extends CryptoniteAbstract {
         }
 
         return encoded;
+    }
+
+    public static boolean certificateIsOcspExtKeyUsage(final byte[] cert) throws CryptoniteException {
+        CertificatePointer certPtr = certificateDecode(cert);
+
+        try {
+            boolean flag = false;
+            execute(instance.cert_is_ocsp_cert(certPtr, flag));
+            return flag;
+        } catch (Exception e) {
+            return false;
+        } finally {
+            CryptonitePkiJnr.certificateFree(certPtr);;
+        }
     }
 
     public static void aidFree(final AlgorithmIdentifierPointer aid) {
@@ -544,6 +574,22 @@ public class CryptonitePkiJnr extends CryptoniteAbstract {
         instance.ext_free(ext);
     }
 
+    public static boolean ocspResponseVerify(final byte[] ocspResp, final byte[] cert) throws CryptoniteException {
+        OCSPResponsePointer ocspResponsePointer = ocspResponseDecode(ocspResp);
+        VerifyAdapterPointer vaPtr = getVerifyAdapterByCert(cert);
+
+        try {
+            execute(instance.ocspresp_verify(ocspResponsePointer, vaPtr));
+
+            return true;
+        } catch (Exception e) {
+            return false;
+        } finally {
+            ocspResposeFree(ocspResponsePointer);
+            verifyAdapterFree(vaPtr);
+        }
+    }
+
     public static byte[] ocspResposeEncode(final OCSPResponsePointer ocsp) throws CryptoniteException {
         final PointerByReference ptrEncoded = new PointerByReference();
         execute(instance.ocspresp_encode(ocsp, ptrEncoded));
@@ -590,6 +636,22 @@ public class CryptonitePkiJnr extends CryptoniteAbstract {
         }
 
         return ptrAsn1Request;
+    }
+
+    public static OCSPResponsePointer ocspResponseDecode(final byte[] response) throws CryptoniteException {
+        final ByteArrayPointer ptrByteResponse = CryptoniteJnr.byteToByteArray(response);
+        final OCSPResponsePointer ptrAsn1Response = instance.ocspresp_alloc();
+
+        try {
+            execute(instance.ocspresp_decode(ptrAsn1Response, ptrByteResponse));
+        } catch (Exception e) {
+            ocspResposeFree(ptrAsn1Response);
+            throw e;
+        } finally {
+            CryptoniteJnr.freeByteArray(ptrByteResponse);
+        }
+
+        return ptrAsn1Response;
     }
 
     public static byte[] engineOCSPRequestGenerate(final SignAdapterPointer sa,
