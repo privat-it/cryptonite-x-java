@@ -1,0 +1,8 @@
+syntax:glob
+build
+.settings
+.gradle/
+.project
+.idea
+*.orig
+*.iml

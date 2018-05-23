@@ -72,7 +72,7 @@ final class JarLoader {
 
     private static String getLibDir() {
         final String name = System.getProperty("os.name").toLowerCase();
-        final String arch = System.getProperty("os.arch").endsWith("64") ? "x86-64" : "x86-32";
+        final String arch = System.getProperty("os.arch").endsWith("64") ? "x86-64" : "x86";
         final String os;
 
         if (name.startsWith("win")) {
