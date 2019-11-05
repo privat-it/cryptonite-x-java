@@ -767,12 +767,25 @@ public class CryptoniteX {
      */
     public static byte[] cmsJoin(final byte[]... CMS) throws CryptoniteException {
         byte[] tmp = null;
+        byte[] data = null;
         int i = 0;
         for (byte[] sign : CMS) {
             if (i == 0) {
-                tmp = sign;
+                try {
+                    ContentInfoPointer ptr = CryptonitePkiJnr.contentInfoDecode(sign);
+                    CryptonitePkiJnr.contentInfoFree(ptr);
+                    tmp = sign;
+                } catch (CryptoniteException e) {
+                    data = sign;
+                }
             } else {
-                final ByteArrayPointer result = CryptoniteXJnr.CmsJoin(null, sign, tmp);
+                final ByteArrayPointer result;
+                if (data == null) {
+                    result = CryptoniteXJnr.CmsJoin(null, sign, tmp);
+                } else {
+                    result = CryptoniteXJnr.CmsJoin(data, sign, null);
+                    data = null;
+                }
 
                 tmp = CryptoniteJnr.byteArrayToByte(result);
                 CryptoniteJnr.freeByteArray(result);
