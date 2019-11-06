@@ -6,7 +6,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'net.sf.proguard:proguard-gradle:5.2.1'
+        classpath 'net.sf.proguard:proguard-gradle:6.2.+'
     }
 }
 
@@ -20,7 +20,7 @@ repositories {
 }
 
 task setVersionProperty {
-    version = "1.1.0";
+    version = "1.1.1";
 }
 
 compileJava.options.encoding = 'UTF-8'
