@@ -47,6 +47,8 @@ public class CMSTest {
     private byte[] cms;
     private String password = "testPasswordРізнимиМовамиʼє1ʼ!№;%:?%Э\"";
     private String TSP_URL = "http://acsk.privatbank.ua/services/tsp/";
+    private byte[] data;
+    private byte[] cmsSign;
 
     @BeforeClass
     public void setUp() throws CryptoniteException {
@@ -61,11 +63,26 @@ public class CMSTest {
             cms2 = Files.readAllBytes(Paths.get("src/test/resources/3sign_2.dat"));
             cms3 = Files.readAllBytes(Paths.get("src/test/resources/3sign_3.dat"));
             cms = Files.readAllBytes(Paths.get("src/test/resources/0000000726643853.1.0.pdf"));
+            data = Files.readAllBytes(Paths.get("src/test/resources/data.pdf"));
+            cmsSign = Files.readAllBytes(Paths.get("src/test/resources/cmsSign.dat"));
             
             CryptoniteX.init();
 
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testcmsJoin() throws CryptoniteException {
+        final byte[] cmsJoin =  CryptoniteX.cmsJoin(data, cmsSign);
+        Assert.assertNotNull(cmsJoin);
+
+        List<SignInfo> listSignInfo = CryptoniteX.cmsVerify(cmsJoin);
+        Assert.assertNotNull(listSignInfo);
+
+        for (SignInfo signInfo : listSignInfo) {
+            Assert.assertTrue(signInfo.getSignStatus() == SignStatus.VALID);
         }
     }
 
