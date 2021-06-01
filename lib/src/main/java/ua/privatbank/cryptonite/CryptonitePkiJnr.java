@@ -12,6 +12,7 @@ import jnr.ffi.byref.PointerByReference;
 
 import ua.privatbank.cryptonite.jnr.CryptonitePkiNative;
 import ua.privatbank.cryptonite.jnr.asn1.Asn1DescriptorPointer;
+import ua.privatbank.cryptonite.jnr.asn1.BIT_STRINGPointer;
 import ua.privatbank.cryptonite.jnr.asn1.INTEGERPointer;
 import ua.privatbank.cryptonite.jnr.crypto.ByteArrayPointer;
 import ua.privatbank.cryptonite.jnr.id.OidId;
@@ -65,6 +66,11 @@ public class CryptonitePkiJnr extends CryptoniteAbstract {
     public static void integerFree(final INTEGERPointer integer) {
         Asn1DescriptorPointer descriptor = instance.get_INTEGER_desc();
         instance.asn_free(descriptor, integer.getPointer());
+    }
+
+    public static void bitStringFree(final BIT_STRINGPointer bitString) {
+        Asn1DescriptorPointer descriptor = instance.get_BIT_STRING_desc();
+        instance.asn_free(descriptor, bitString.getPointer());
     }
 
     public static OidNumbersPointer oidsGetOidNumbersById(OidId oid_id) {
@@ -161,6 +167,31 @@ public class CryptonitePkiJnr extends CryptoniteAbstract {
         return ptrAid;
     }
 
+    public static int certificateGetKeyUsage(final CertificatePointer cert) throws CryptoniteException {
+        int keyUsageArray = 0;
+        final PointerByReference ptrKeyUsage = new PointerByReference();
+
+        execute(instance.cert_get_key_usage(cert, ptrKeyUsage));
+
+        BIT_STRINGPointer bitStringPointer = new BIT_STRINGPointer(ptrKeyUsage);
+
+        try {
+            for (int pos = 0; pos < 9; pos++) {
+                int[] bit = new int[1];
+                execute(instance.asn_BITSTRING_get_bit(bitStringPointer, pos, bit));
+                if (bit[0] == 1) {
+                    keyUsageArray |= bit[0] << pos;
+                }
+            }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            bitStringFree(bitStringPointer);
+        }
+
+        return keyUsageArray;
+    }
+
     public static byte[] certificateGetSpki(final CertificatePointer cert) throws CryptoniteException {
         final PointerByReference ptrSpki = new PointerByReference();
         final byte[] encoded;
@@ -188,7 +219,7 @@ public class CryptonitePkiJnr extends CryptoniteAbstract {
         } catch (Exception e) {
             return false;
         } finally {
-            CryptonitePkiJnr.certificateFree(certPtr);;
+            CryptonitePkiJnr.certificateFree(certPtr);
         }
     }
 
@@ -237,7 +268,7 @@ public class CryptonitePkiJnr extends CryptoniteAbstract {
         try {
             ptrAid = aidDecode(aid);
             ptrParams = aidDecode(params);
-            
+
             execute(instance.sign_adapter_init_by_aid(ptrPrivateKey, ptrAid, ptrParams, sa));
         } finally {
             aidFree(ptrAid);
@@ -655,7 +686,7 @@ public class CryptonitePkiJnr extends CryptoniteAbstract {
     }
 
     public static byte[] engineOCSPRequestGenerate(final SignAdapterPointer sa,
-            final byte[] rootCert, final byte[] ocspCert, Boolean includeNonce, List<byte[]> serialNumbers) throws CryptoniteException {
+                                                   final byte[] rootCert, final byte[] ocspCert, Boolean includeNonce, List<byte[]> serialNumbers) throws CryptoniteException {
         final PointerByReference ptrCtx = new PointerByReference();
         final PointerByReference ptrRequest = new PointerByReference();
         OcspRequestEnginePointer ctx = null;

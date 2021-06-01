@@ -33,6 +33,8 @@ public class CertificateInfo {
 
     private final HashMap<String, String> subjectAltName;
 
+    private final int keyUsage;
+
     private final byte[] encoded; 
 
     public CertificateInfo(final CertificatePointer cert) throws CryptoniteException {
@@ -49,6 +51,8 @@ public class CertificateInfo {
         this.notValidBefore = CryptoniteXJnr.certificateGetNotBefore(cert);
         this.notValidAfter = CryptoniteXJnr.certificateGetNotAfter(cert);
         this.publicKey = CryptonitePkiJnr.certificateGetSpki(cert);
+
+        this.keyUsage = CryptonitePkiJnr.certificateGetKeyUsage(cert);
 
         this.encoded = CryptonitePkiJnr.certificateEncode(cert);
     }
@@ -93,6 +97,10 @@ public class CertificateInfo {
         return subjectAltName;
     }
 
+    public int getKeyUsage() {
+        return keyUsage;
+    }
+
     public byte[] getEncoded() {
         return encoded;
     }
@@ -102,7 +110,7 @@ public class CertificateInfo {
         return "CertificateInfo [serialNumber=" + Utils.byteToHex(serialNumber) + ", issuer=" + issuer + ", subject="
                 + subject + ", notValidBefore=" + notValidBefore + ", notValidAfter=" + notValidAfter + ", publicKey="
                 + Utils.byteToHex(publicKey) + ", qcStatement=" + qcStatement + ", inn=" + inn + ", egrpou=" + egrpou
-                + ", subjectAltName=" + subjectAltName + "]";
+                + ", subjectAltName=" + subjectAltName + ", keyUsage=" + keyUsage + "]";
     }
 
 }

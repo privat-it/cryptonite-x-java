@@ -6,6 +6,7 @@
 package ua.privatbank.cryptonite.jnr.asn1;
 
 import jnr.ffi.Pointer;
+import jnr.ffi.byref.PointerByReference;
 import jnr.ffi.mapper.FromNativeContext;
 import jnr.ffi.mapper.FromNativeConverter;
 import jnr.ffi.mapper.ToNativeContext;
@@ -19,6 +20,10 @@ public final class BIT_STRINGPointer {
         this.pointer = pointer;
     }
 
+    public BIT_STRINGPointer(PointerByReference pointer) {
+        this.pointer = pointer.getValue();
+    }
+
     @ToNativeConverter.ToNative(nativeType = Pointer.class)
     public static Pointer toNative(BIT_STRINGPointer value, ToNativeContext context) {
         return value != null ? value.pointer : null;
@@ -27,5 +32,9 @@ public final class BIT_STRINGPointer {
     @FromNativeConverter.FromNative(nativeType = Pointer.class)
     public static BIT_STRINGPointer fromNative(Pointer value, FromNativeContext context) {
         return value != null ? new BIT_STRINGPointer(value) : null;
+    }
+
+    public Pointer getPointer() {
+        return pointer;
     }
 }
