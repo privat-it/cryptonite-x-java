@@ -26,4 +26,8 @@ public enum KeyUsageBits {
     }
 
     private final int value;
+
+    public boolean equals(int value) {
+        return (this.value & value) != 0;
+    }
 }

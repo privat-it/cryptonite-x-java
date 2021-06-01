@@ -3825,4 +3825,18 @@ public interface CryptonitePkiNative {
     void asn_free(Asn1DescriptorPointer td, Pointer ptr);
 
     Asn1DescriptorPointer get_INTEGER_desc();
+
+    /**
+     * Возврощает по позиции состояния бита BITSTRING.
+     * Выделяемая память требует освобождения.
+     *
+     * @param bitString указатель на объект
+     * @param pos       положение бита
+     * @param bit       состояние бита
+     *
+     * @return код ошибки
+     */
+    int asn_BITSTRING_get_bit(BIT_STRINGPointer bitString, int pos, int[] bit);
+
+    Asn1DescriptorPointer get_BIT_STRING_desc();
 }
