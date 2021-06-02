@@ -20,7 +20,7 @@ repositories {
 }
 
 task setVersionProperty {
-    version = "1.1.1";
+    version = "1.2.0";
 }
 
 compileJava.options.encoding = 'UTF-8'
@@ -62,7 +62,7 @@ compileJava.dependsOn copyLib
 jar {
     baseName = 'cryptonite-x'
 
-    from ({
+    from({
         configurations.compile.collect {
             it.isDirectory() ? it : zipTree(it)
         }
@@ -101,7 +101,7 @@ task javadocs(type: Javadoc) {
 task minify(type: proguard.gradle.ProGuardTask) {
     it.dependsOn shadowJar
     injars tasks['shadowJar'].archivePath
-    outjars new File(tasks['shadowJar'].destinationDir, "cryptonite-x-min-"+version+".jar")
+    outjars new File(tasks['shadowJar'].destinationDir, "cryptonite-x-min-" + version + ".jar")
     libraryjars fileTree(dir: "${System.getProperty('java.home')}/lib/", include: "*.jar")
 
     keep "public class ua.privatbank.cryptonite.** { public *; }"
@@ -122,7 +122,7 @@ task minify(type: proguard.gradle.ProGuardTask) {
 }
 
 manifest {
-    attributes 'Implementation-Title': 'CryptoniteX', 'Implementation-Version 1.0.0'
+    attributes 'Implementation-Title': 'CryptoniteX', 'Implementation-Version ' + version
 }
 
 defaultTasks 'minify'
